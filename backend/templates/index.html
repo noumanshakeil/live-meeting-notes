@@ -1,52 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{{ title }}</title>
-  <link rel="stylesheet" href="/static/styles.css" />
-</head>
-<body>
-  <main>
-    <h1>{{ title }}</h1>
-    <p class="sub">{{ description }} · LLM <span class="pill">{{ llm_mode }}</span></p>
-    <div class="grid">
-      <section class="card">
-        <h2>Create meeting</h2>
-        <form method="post" action="/ui/create">
-        <label>title</label><input name="title" placeholder="title" required />
-<label>attendees</label><input name="attendees" placeholder="attendees" required />
-          <button type="submit">Save</button>
-        </form>
-        <h2 style="margin-top:1.25rem">AI action: {{ action }}</h2>
-        <p class="sub">{{ action_desc }}</p>
-        <form method="post" action="/ui/action">
-          <label>prompt</label>
-          <textarea name="prompt" rows="4" placeholder="Describe what you need..."></textarea>
-          <button type="submit">Run {{ action }}</button>
-        </form>
-        {% if last_result %}
-        <h3>Last result</h3>
-        <pre>{{ last_result }}</pre>
-        {% endif %}
-      </section>
-      <section class="card">
-        <h2>{{ resource }} ({{ items|length }})</h2>
-        <table>
-          <thead><tr><th>id</th><th>data</th></tr></thead>
-          <tbody>
-          {% for item in items %}
-            <tr>
-              <td>{{ item.id }}</td>
-              <td><code>{{ item }}</code></td>
-            </tr>
-          {% else %}
-            <tr><td colspan="2">No items yet</td></tr>
-          {% endfor %}
-          </tbody>
-        </table>
-      </section>
-    </div>
-  </main>
-</body>
-</html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>{{ title }}</title><link rel="stylesheet" href="/static/styles.css"/></head>
+<body><main>
+<h1>{{ title }}</h1><p class="sub">Capture bullets &amp; decisions, then roll a live summary.</p>
+<div class="grid">
+<section class="card">
+  <form method="post" action="/ui/sessions"><label>Meeting title</label><input name="title" required/><button type="submit">Start</button></form>
+  <ul>{% for s in sessions %}<li><a href="/?session_id={{ s.id }}">{{ s.title }}</a></li>{% endfor %}</ul>
+</section>
+<section class="card">
+  {% if session_id %}
+  <form method="post" action="/ui/bullets"><input type="hidden" name="session_id" value="{{ session_id }}"/>
+  <label>Bullet</label><textarea name="text" rows="2" required></textarea><button type="submit">Add note</button></form>
+  <form method="post" action="/ui/decisions"><input type="hidden" name="session_id" value="{{ session_id }}"/>
+  <label>Decision</label><textarea name="text" rows="2" required></textarea><button type="submit">Log decision</button></form>
+  <form method="post" action="/ui/summarize"><input type="hidden" name="session_id" value="{{ session_id }}"/><button type="submit">Summarize</button></form>
+  <h3>Notes</h3>{% for b in bullets %}<div class="sub">• {{ b.text }}</div>{% endfor %}
+  <h3>Decisions</h3>{% for d in decisions %}<div class="pill">{{ d.text }}</div>{% endfor %}
+  {% if session and session.summary %}<h3>Summary</h3><pre>{{ session.summary }}</pre>{% endif %}
+  {% endif %}
+</section>
+</div></main></body></html>

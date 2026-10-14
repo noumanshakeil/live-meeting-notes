@@ -1,0 +1,13 @@
+[project]
+name = "live-meeting-notes"
+version = "2.0.0"
+description = "Live meeting workspace with rolling bullets, decisions, and on-demand LLM summaries."
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
